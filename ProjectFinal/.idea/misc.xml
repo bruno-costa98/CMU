@@ -3,12 +3,34 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1" />
         <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/activity_atividade2.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/activity_main.xml" value="0.24010416666666667" />
-        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/activity_register.xml" value="0.12183383991894631" />
-        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/fragment_login.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/activity_main2.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/activity_register.xml" value="0.1" />
+        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/bar.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/buttons_menu.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/fragment_history.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/fragment_item.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/fragment_login.xml" value="0.264" />
+        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/fragment_map.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/fragment_maps.xml" value="0.24010416666666667" />
+        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/fragment_register.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/fragment_regtrainer.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/fragmentlogin.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/fragmentregister.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/location_fragment.xml" value="0.2418478260869565" />
+        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/my_toolbar.xml" value="0.25052083333333336" />
+        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/piupiu.xml" value="0.25052083333333336" />
+        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/principal_main.xml" value="0.14583333333333334" />
+        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/toolbar.xml" value="0.14583333333333334" />
+        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/trainer_fragment.xml" value="0.14583333333333334" />
+        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/trainerfragment.xml" value="0.14583333333333334" />
+        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/menu/navigation_bar.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/menu/navigation_menu.xml" value="0.14583333333333334" />
+        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/menu/the_toolbar.xml" value="0.25" />
+        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/menu/toolbar.xml" value="0.25052083333333336" />
+        <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/menu/toolbar_menu.xml" value="0.14583333333333334" />
       </map>
     </option>
   </component>

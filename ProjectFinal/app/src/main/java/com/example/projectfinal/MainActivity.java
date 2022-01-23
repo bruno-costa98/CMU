@@ -1,9 +1,12 @@
 package com.example.projectfinal;
 
+
+import android.app.Application;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.media.Ringtone;
@@ -11,8 +14,9 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+
 import android.text.TextUtils;
-import android.view.View;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -21,24 +25,40 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
+
+import com.example.projectfinal.Models.User;
+import com.example.projectfinal.ViewModels.UserViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
-import Fragments.LoginFragment;
-import Fragments.RegisterFragment;
+import com.example.projectfinal.Fragments.LoginFragment;
+import com.example.projectfinal.Fragments.RegisterFragment;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseUser;
 
 
 public class MainActivity extends AppCompatActivity {
-
+    private Context context;
     private FragmentManager fragmentManager;
     private FirebaseAuth mAuth;
+    private UserViewModel userViewModel;
+
+    String TAG = "here";
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        this.context = getApplicationContext();
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        userViewModel = new ViewModelProvider(this, new ViewModelProvider.AndroidViewModelFactory((Application)
+                context.getApplicationContext())).get(UserViewModel.class);
 
         createNotificationChannel();
 
@@ -50,20 +70,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void registerRedirect() {
+    public void registerPage() {
         RegisterFragment registerFragment = new RegisterFragment();
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager()
-                .beginTransaction();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragmentContainer, registerFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 
-    public void register(EditText mEmail, EditText mPassword) {
+    public void login(String email, String password){
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (!task.isSuccessful()) {
+                            String errorCode = ((FirebaseAuthException) task.getException())
+                                    .getErrorCode();
+                            Toast.makeText(context, "Erro de login!", Toast.LENGTH_SHORT).show();
+                            } else {
+                            toPrincipalPage();
+                        }
+                    }
+                });
+    }
 
+    public void register(EditText mUserName, EditText mEmail, EditText mPassword) {
+
+/*
         mAuth = FirebaseAuth.getInstance();
         String email = mEmail.getText().toString().trim();
         String password = mPassword.getText().toString().trim();
+        String userName = mUserName.getText().toString().trim();
 
         if (TextUtils.isEmpty(email)) {
             mEmail.setError("Email required");
@@ -84,7 +121,30 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Error" + task.getException(), Toast.LENGTH_SHORT).show();
                 }
             }
-        });
+        }); */
+
+        mAuth.createUserWithEmailAndPassword(mEmail.getText().toString(),
+                mPassword.getText().toString())
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (TextUtils.isEmpty(mEmail.getText())) {
+                            mEmail.setError("Email required");
+                            return;
+                        } else if (TextUtils.isEmpty(mPassword.getText())){
+                            mPassword.setError("Password required");
+                            return;
+                        } else {
+                            User user = new User(mEmail.getText().toString(), mUserName.getText().toString());
+                            Log.d(TAG, user.email + user.userName + user.userId);
+                            userViewModel.registerUser(user);
+                            mAuth.signOut();
+                            fragmentManager.popBackStack();
+                            Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
+                            gerarNotificacao();
+                        }
+                    }
+                });
     }
 
     private void createNotificationChannel() {
@@ -111,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
         builder.setContentTitle("Bem vindo!");
         builder.setContentText("Vamos treinar?");
         builder.setSmallIcon(R.drawable.ic_launcher);
-        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.thiengo));
+        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.running));
         builder.setContentIntent(p);
 
         Notification n = builder.build();
@@ -124,6 +184,14 @@ public class MainActivity extends AppCompatActivity {
             toque.play();
         }
         catch(Exception e){}
+    }
+
+    public void toPrincipalPage(){
+        Intent intent = new Intent(context, PrincipalActivity.class);
+        startActivity(intent);
+        Toast.makeText(context, "Success!",
+                Toast.LENGTH_SHORT).show();
+        finish();
     }
 }
 

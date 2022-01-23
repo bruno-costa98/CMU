@@ -1,12 +1,12 @@
-package Models;
+package com.example.projectfinal.Models;
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
-
 import java.io.Serializable;
 
 @Entity(indices = {@Index(value = {"email"}, unique = true)})
+
 public class User implements Serializable {
 
     @NonNull
@@ -21,3 +21,4 @@ public class User implements Serializable {
         this.userName = userName;
     }
 }
+
