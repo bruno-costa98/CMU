@@ -8,6 +8,7 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -26,8 +27,12 @@ import com.example.projectfinal.Fragments.ItemAdapter;
 import com.example.projectfinal.Fragments.MapsFragment;
 import com.example.projectfinal.Fragments.RegTrainerFragment;
 import com.example.projectfinal.Fragments.TrainerFragment;
+<<<<<<< HEAD
+import com.example.projectfinal.Models.Coordenada;
+=======
 import com.example.projectfinal.Models.Treino;
 import com.example.projectfinal.ViewModels.TreinoViewModel;
+>>>>>>> 1f25b785fd7f8cb83b02c5ef19719481cffec340
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -77,11 +82,7 @@ public class PrincipalActivity extends AppCompatActivity implements
         navigationView = findViewById(R.id.navigation_bar);
         navigationView.setSelectedItemId(R.id.trainer);
 
-        mapsFragment = new MapsFragment();
-        fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainerPrin, mapsFragment);
-        fragmentTransaction.commit();
+
 
         navigationView.setOnItemSelectedListener(this);
 
@@ -95,6 +96,8 @@ public class PrincipalActivity extends AppCompatActivity implements
                         if (location != null) {
                             latitude = location.getLatitude();
                             longitude= location.getLongitude();
+                            Log.e("long", String.valueOf(longitude));
+                            Log.e("lat", String.valueOf(latitude));
                             Toast.makeText(PrincipalActivity.this, "Localização conseguida", Toast.LENGTH_SHORT).show();
                         } else {
                             locationRequest = LocationRequest.create();
@@ -111,6 +114,8 @@ public class PrincipalActivity extends AppCompatActivity implements
                                         if (location != null) {
                                             latitude = location.getLatitude();
                                             longitude = location.getLongitude();
+                                            Log.e("long", String.valueOf(longitude));
+                                            Log.e("lat", String.valueOf(latitude));
                                         }
                                     }
                                 }
@@ -123,6 +128,16 @@ public class PrincipalActivity extends AppCompatActivity implements
         else {
             lastLocation();
         }
+
+        mapsFragment = new MapsFragment();
+        Bundle b = new Bundle();
+        b.putDouble("lat", latitude);
+        b.putDouble("long", longitude);
+        mapsFragment.setArguments(b);
+        fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainerPrin, mapsFragment);
+        fragmentTransaction.commit();
     }
 
     @Override
@@ -186,6 +201,10 @@ public class PrincipalActivity extends AppCompatActivity implements
     public void toMapsFragment(){
         MapsFragment mapsFragment;
         mapsFragment = new MapsFragment();
+        Bundle b = new Bundle();
+        b.putDouble("lat", latitude);
+        b.putDouble("long", longitude);
+        mapsFragment.setArguments(b);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragmentContainerPrin, mapsFragment);
         fragmentTransaction.addToBackStack(null);
