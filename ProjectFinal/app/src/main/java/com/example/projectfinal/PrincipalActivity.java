@@ -2,6 +2,7 @@ package com.example.projectfinal;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Application;
 import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.location.Location;
@@ -18,10 +19,15 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.example.projectfinal.Fragments.HistoryFragment;
+import com.example.projectfinal.Fragments.ItemAdapter;
 import com.example.projectfinal.Fragments.MapsFragment;
 import com.example.projectfinal.Fragments.RegTrainerFragment;
 import com.example.projectfinal.Fragments.TrainerFragment;
+import com.example.projectfinal.Models.Treino;
+import com.example.projectfinal.ViewModels.TreinoViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -49,6 +55,9 @@ public class PrincipalActivity extends AppCompatActivity implements
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
     public double latitude, longitude;
+    private TreinoViewModel treinoViewModel;
+    private Treino treino;
+    private ItemAdapter itemAdapter;
 
     @SuppressLint("MissingPermission")
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +67,8 @@ public class PrincipalActivity extends AppCompatActivity implements
         mFusedLocation = LocationServices.getFusedLocationProviderClient(this);
         mAuth = FirebaseAuth.getInstance();
 
+        treinoViewModel = new ViewModelProvider(this, new ViewModelProvider.AndroidViewModelFactory((Application)
+                this.getApplicationContext())).get(TreinoViewModel.class);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("SportZ");
@@ -163,6 +174,13 @@ public class PrincipalActivity extends AppCompatActivity implements
     }
 
     public void save(EditText description, EditText distance, EditText time){
+        String descricao = String.valueOf(description.getText());
+        String distancia = String.valueOf(distance.getText());
+        String tempo = String.valueOf(time.getText());
+        treino = new Treino(descricao, distancia, tempo);
+        treinoViewModel.insertTreino(treino);
+
+        Toast.makeText(PrincipalActivity.this, "Saved!", Toast.LENGTH_SHORT).show();
     }
 
     public void toMapsFragment(){
@@ -188,13 +206,6 @@ public class PrincipalActivity extends AppCompatActivity implements
                 REQUEST_FINE_LOCATION);
     }
 
-    public Double getLatitude(){
-        return latitude;
-    }
-
-    public Double getLon(){
-        return this.longitude;
-    }
 
     /*
     @Override
