@@ -25,14 +25,18 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.projectfinal.Fragments.HistoryFragment;
 import com.example.projectfinal.Fragments.ItemAdapter;
 import com.example.projectfinal.Fragments.MapsFragment;
+import com.example.projectfinal.Fragments.PlaceAdapter;
+import com.example.projectfinal.Fragments.PlacesFragment;
 import com.example.projectfinal.Fragments.RegTrainerFragment;
 import com.example.projectfinal.Fragments.TrainerFragment;
-<<<<<<< HEAD
-import com.example.projectfinal.Models.Coordenada;
-=======
+
+import com.example.projectfinal.Interfaces.PlacesApi;
+import com.example.projectfinal.Models.Places;
+import com.example.projectfinal.Models.Results;
 import com.example.projectfinal.Models.Treino;
+import com.example.projectfinal.Retrofit.RetrofitService;
 import com.example.projectfinal.ViewModels.TreinoViewModel;
->>>>>>> 1f25b785fd7f8cb83b02c5ef19719481cffec340
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -42,6 +46,14 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class PrincipalActivity extends AppCompatActivity implements
         NavigationBarView.OnItemSelectedListener{ //implements SensorEventListener {
@@ -50,7 +62,7 @@ public class PrincipalActivity extends AppCompatActivity implements
     private SensorManager sensor;
     private Boolean running = false;
     private FirebaseAuth mAuth;
-    private MapsFragment mapsFragment;
+    private PlacesFragment mapsFragment;
     private HistoryFragment historyFragment;
     private FragmentManager fragmentManager;
     private BottomNavigationView navigationView;
@@ -63,6 +75,7 @@ public class PrincipalActivity extends AppCompatActivity implements
     private TreinoViewModel treinoViewModel;
     private Treino treino;
     private ItemAdapter itemAdapter;
+
 
     @SuppressLint("MissingPermission")
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +94,6 @@ public class PrincipalActivity extends AppCompatActivity implements
 
         navigationView = findViewById(R.id.navigation_bar);
         navigationView.setSelectedItemId(R.id.trainer);
-
 
 
         navigationView.setOnItemSelectedListener(this);
@@ -128,8 +140,7 @@ public class PrincipalActivity extends AppCompatActivity implements
         else {
             lastLocation();
         }
-
-        mapsFragment = new MapsFragment();
+        mapsFragment = new PlacesFragment();
         Bundle b = new Bundle();
         b.putDouble("lat", latitude);
         b.putDouble("long", longitude);
@@ -138,6 +149,7 @@ public class PrincipalActivity extends AppCompatActivity implements
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragmentContainerPrin, mapsFragment);
         fragmentTransaction.commit();
+
     }
 
     @Override
