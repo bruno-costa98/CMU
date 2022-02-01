@@ -3,6 +3,7 @@ package com.example.projectfinal;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Application;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.location.Location;
@@ -137,6 +138,27 @@ public class PrincipalActivity extends AppCompatActivity implements
         getMenuInflater().inflate(R.menu.the_toolbar, menu);
         return true;
     }
+
+
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        if(item.getItemId() == R.id.logout){
+            logOut();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    private void logOut() {
+        mAuth.signOut();
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
