@@ -28,29 +28,15 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.Serializable;
-
 public class MapsFragment extends Fragment {
 
     public Context context;
     TextView textView;
-    private Double lat;
-    private Double longi;
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            lat = getArguments().getDouble("lat");
-            longi = getArguments().getDouble("long");
-            Log.e("local", lat + " + " + longi);
-        }
     }
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
@@ -66,13 +52,9 @@ public class MapsFragment extends Fragment {
          */
         @Override
         public void onMapReady(GoogleMap googleMap) {
-            LatLng sydney = new LatLng(41.089723, -8.589592);
-            LatLng c = new LatLng(lat, longi);
-//            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-            googleMap.addMarker(new MarkerOptions().position(c).title("Estás aqui"));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(c));
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(c, 15));
+            LatLng sydney = new LatLng(50, 120);
+            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         }
     };
 

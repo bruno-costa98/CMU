@@ -11,6 +11,11 @@
         android:icon="@drawable/ic_run"
         android:title="AddTrainer" />
     <item
+        android:id="@+id/places"
+        android:enabled="true"
+        android:icon="@drawable/ic_location"
+        android:title="Places" />
+    <item
         android:id="@+id/history"
         android:enabled="true"
         android:icon="@drawable/ic_history"

@@ -1,9 +1,11 @@
 package com.example.projectfinal.Fragments;
 
 import android.content.Context;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -54,7 +56,6 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ItemViewHold
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         public final View view;
         public final TextView street, city;
-
         private Places place;
         public ItemViewHolder(@NonNull View view) {
             super(view);

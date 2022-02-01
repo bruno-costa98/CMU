@@ -29,10 +29,6 @@ import com.example.projectfinal.Fragments.PlaceAdapter;
 import com.example.projectfinal.Fragments.PlacesFragment;
 import com.example.projectfinal.Fragments.RegTrainerFragment;
 import com.example.projectfinal.Fragments.TrainerFragment;
-
-import com.example.projectfinal.Interfaces.PlacesApi;
-import com.example.projectfinal.Models.Places;
-import com.example.projectfinal.Models.Results;
 import com.example.projectfinal.Models.Treino;
 import com.example.projectfinal.Retrofit.RetrofitService;
 import com.example.projectfinal.ViewModels.TreinoViewModel;
@@ -46,14 +42,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class PrincipalActivity extends AppCompatActivity implements
         NavigationBarView.OnItemSelectedListener{ //implements SensorEventListener {
@@ -62,7 +50,7 @@ public class PrincipalActivity extends AppCompatActivity implements
     private SensorManager sensor;
     private Boolean running = false;
     private FirebaseAuth mAuth;
-    private PlacesFragment mapsFragment;
+    private MapsFragment mapsFragment;
     private HistoryFragment historyFragment;
     private FragmentManager fragmentManager;
     private BottomNavigationView navigationView;
@@ -95,62 +83,54 @@ public class PrincipalActivity extends AppCompatActivity implements
         navigationView = findViewById(R.id.navigation_bar);
         navigationView.setSelectedItemId(R.id.trainer);
 
-
-        navigationView.setOnItemSelectedListener(this);
-
-        if (getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-        mFusedLocation.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            latitude = location.getLatitude();
-                            longitude= location.getLongitude();
-                            Log.e("long", String.valueOf(longitude));
-                            Log.e("lat", String.valueOf(latitude));
-                            Toast.makeText(PrincipalActivity.this, "Localização conseguida", Toast.LENGTH_SHORT).show();
-                        } else {
-                            locationRequest = LocationRequest.create();
-                            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-                            locationRequest.setInterval(20 * 1000);
-
-                            locationCallback = new LocationCallback() {
-                                @Override
-                                public void onLocationResult(LocationResult locationResult) {
-                                    if (locationResult == null) {
-                                        return;
-                                    }
-                                    for (Location location : locationResult.getLocations()) {
-                                        if (location != null) {
-                                            latitude = location.getLatitude();
-                                            longitude = location.getLongitude();
-                                            Log.e("long", String.valueOf(longitude));
-                                            Log.e("lat", String.valueOf(latitude));
-                                        }
-                                    }
-                                }
-                            };
-                            mFusedLocation.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-                            Toast.makeText(PrincipalActivity.this, "A localização é a mesma de antes", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });}
-        else {
-            lastLocation();
-        }
-        mapsFragment = new PlacesFragment();
-        Bundle b = new Bundle();
-        b.putDouble("lat", latitude);
-        b.putDouble("long", longitude);
-        mapsFragment.setArguments(b);
+        mapsFragment = new MapsFragment();
         fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragmentContainerPrin, mapsFragment);
         fragmentTransaction.commit();
 
+        navigationView.setOnItemSelectedListener(this);
+
+        if (getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mFusedLocation.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                latitude = location.getLatitude();
+                                longitude= location.getLongitude();
+                                Toast.makeText(PrincipalActivity.this, "Localização conseguida", Toast.LENGTH_SHORT).show();
+                            } else {
+                                locationRequest = LocationRequest.create();
+                                locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                                locationRequest.setInterval(20 * 1000);
+
+                                locationCallback = new LocationCallback() {
+                                    @Override
+                                    public void onLocationResult(LocationResult locationResult) {
+                                        if (locationResult == null) {
+                                            return;
+                                        }
+                                        for (Location location : locationResult.getLocations()) {
+                                            if (location != null) {
+                                                latitude = location.getLatitude();
+                                                longitude = location.getLongitude();
+                                            }
+                                        }
+                                    }
+                                };
+                                mFusedLocation.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+                                Toast.makeText(PrincipalActivity.this, "A localização é a mesma de antes", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });}
+        else {
+            lastLocation();
+        }
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -169,7 +149,10 @@ public class PrincipalActivity extends AppCompatActivity implements
         } else if(item.getItemId() == R.id.addTrainer) {
             toRegTrainer();
             return true;
-        } else{
+        } else if(item.getItemId()== R.id.places){
+            toPlacesFragment();
+            return true;
+        } else {
             return true;
         }
     }
@@ -213,13 +196,22 @@ public class PrincipalActivity extends AppCompatActivity implements
     public void toMapsFragment(){
         MapsFragment mapsFragment;
         mapsFragment = new MapsFragment();
-        Bundle b = new Bundle();
-        b.putDouble("lat", latitude);
-        b.putDouble("long", longitude);
-        mapsFragment.setArguments(b);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragmentContainerPrin, mapsFragment);
         fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
+    public void toPlacesFragment(){
+        PlacesFragment placesFragment;
+        placesFragment = new PlacesFragment();
+        Bundle b = new Bundle();
+        b.putDouble("lat", latitude);
+        b.putDouble("long", longitude);
+        placesFragment.setArguments(b);
+        fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainerPrin, placesFragment);
         fragmentTransaction.commit();
     }
 
@@ -227,8 +219,8 @@ public class PrincipalActivity extends AppCompatActivity implements
     public void lastLocation(){
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED){
-                requestPermissions();
-                return;
+            requestPermissions();
+            return;
         }
     }
 
@@ -271,3 +263,4 @@ public class PrincipalActivity extends AppCompatActivity implements
     }
      */
 }
+
