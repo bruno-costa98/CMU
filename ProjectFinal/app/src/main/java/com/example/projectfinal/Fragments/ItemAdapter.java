@@ -42,10 +42,12 @@ public  class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolde
 
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
-       holder.treino = treinosList.get(position);
-       holder.textView.setText(treinosList.get(position).getType());
-       holder.textDistancia.setText(treinosList.get(position).getDistance());
-       holder.tempo.setText(treinosList.get(position).getTime());
+            holder.treino = treinosList.get(position);
+            holder.textView.setText(treinosList.get(position).getType());
+            holder.textDistancia.setText(treinosList.get(position).getDistance());
+            holder.tempo.setText(treinosList.get(position).getTime());
+            holder.setData(position);
+            holder.setListeners();
     }
 
     @Override
@@ -60,10 +62,10 @@ public  class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolde
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         public final View view;
         public final TextView textView, textDistancia, tempo;
-        public ImageView delete;
+        public ImageView delete, icon;
         public int mPosition;
-
         private Treino treino;
+
         public ItemViewHolder(@NonNull View view) {
             super(view);
             this.view = view;
@@ -71,7 +73,13 @@ public  class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolde
             textDistancia = view.findViewById(R.id.textDistance);
             tempo = view.findViewById(R.id.textTempo);
             delete = view.findViewById(R.id.delete);
+        }
 
+        public void setData(int position) {
+            mPosition = position;
+        }
+
+        public void setListeners() {
 
             delete.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -81,8 +89,6 @@ public  class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolde
                     }
                 }
             });
-
-
         }
     }
 }
