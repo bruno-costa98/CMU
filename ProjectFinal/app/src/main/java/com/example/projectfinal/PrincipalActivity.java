@@ -8,6 +8,7 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -24,10 +25,14 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.projectfinal.Fragments.HistoryFragment;
 import com.example.projectfinal.Fragments.ItemAdapter;
 import com.example.projectfinal.Fragments.MapsFragment;
+import com.example.projectfinal.Fragments.PlaceAdapter;
+import com.example.projectfinal.Fragments.PlacesFragment;
 import com.example.projectfinal.Fragments.RegTrainerFragment;
 import com.example.projectfinal.Fragments.TrainerFragment;
 import com.example.projectfinal.Models.Treino;
+import com.example.projectfinal.Retrofit.RetrofitService;
 import com.example.projectfinal.ViewModels.TreinoViewModel;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -59,6 +64,7 @@ public class PrincipalActivity extends AppCompatActivity implements
     private Treino treino;
     private ItemAdapter itemAdapter;
 
+
     @SuppressLint("MissingPermission")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,43 +93,44 @@ public class PrincipalActivity extends AppCompatActivity implements
 
         if (getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-        mFusedLocation.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            latitude = location.getLatitude();
-                            longitude= location.getLongitude();
-                            Toast.makeText(PrincipalActivity.this, "Localização conseguida", Toast.LENGTH_SHORT).show();
-                        } else {
-                            locationRequest = LocationRequest.create();
-                            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-                            locationRequest.setInterval(20 * 1000);
+            mFusedLocation.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                latitude = location.getLatitude();
+                                longitude= location.getLongitude();
+                                Toast.makeText(PrincipalActivity.this, "Localização conseguida", Toast.LENGTH_SHORT).show();
+                            } else {
+                                locationRequest = LocationRequest.create();
+                                locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                                locationRequest.setInterval(20 * 1000);
 
-                            locationCallback = new LocationCallback() {
-                                @Override
-                                public void onLocationResult(LocationResult locationResult) {
-                                    if (locationResult == null) {
-                                        return;
-                                    }
-                                    for (Location location : locationResult.getLocations()) {
-                                        if (location != null) {
-                                            latitude = location.getLatitude();
-                                            longitude = location.getLongitude();
+                                locationCallback = new LocationCallback() {
+                                    @Override
+                                    public void onLocationResult(LocationResult locationResult) {
+                                        if (locationResult == null) {
+                                            return;
+                                        }
+                                        for (Location location : locationResult.getLocations()) {
+                                            if (location != null) {
+                                                latitude = location.getLatitude();
+                                                longitude = location.getLongitude();
+                                            }
                                         }
                                     }
-                                }
-                            };
-                            mFusedLocation.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-                            Toast.makeText(PrincipalActivity.this, "A localização é a mesma de antes", Toast.LENGTH_SHORT).show();
+                                };
+                                mFusedLocation.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+                                Toast.makeText(PrincipalActivity.this, "A localização é a mesma de antes", Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
-                });}
+                    });}
         else {
             lastLocation();
         }
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -142,7 +149,10 @@ public class PrincipalActivity extends AppCompatActivity implements
         } else if(item.getItemId() == R.id.addTrainer) {
             toRegTrainer();
             return true;
-        } else{
+        } else if(item.getItemId()== R.id.places){
+            toPlacesFragment();
+            return true;
+        } else {
             return true;
         }
     }
@@ -192,12 +202,25 @@ public class PrincipalActivity extends AppCompatActivity implements
         fragmentTransaction.commit();
     }
 
+    public void toPlacesFragment(){
+        PlacesFragment placesFragment;
+        placesFragment = new PlacesFragment();
+        Bundle b = new Bundle();
+        b.putDouble("lat", latitude);
+        b.putDouble("long", longitude);
+        placesFragment.setArguments(b);
+        fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainerPrin, placesFragment);
+        fragmentTransaction.commit();
+    }
+
 
     public void lastLocation(){
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED){
-                requestPermissions();
-                return;
+            requestPermissions();
+            return;
         }
     }
 
@@ -240,3 +263,4 @@ public class PrincipalActivity extends AppCompatActivity implements
     }
      */
 }
+
