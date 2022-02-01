@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,13 +18,19 @@ import java.util.List;
 
 public  class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder> {
 
+    public interface OnDeleteClickListener {
+        void OnDeleteClickListener(Treino meuTreino);
+    }
+
     private List<Treino> treinosList;
     private LayoutInflater layoutInflater;
     private Context mContext;
+    private OnDeleteClickListener onDeleteClickListener;
 
-    public ItemAdapter(Context context){
+    public ItemAdapter(Context context, OnDeleteClickListener listener){
         this.treinosList = new ArrayList<>();
         mContext = context;
+        this.onDeleteClickListener = listener;
     }
 
     @NonNull
@@ -53,6 +60,8 @@ public  class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolde
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         public final View view;
         public final TextView textView, textDistancia, tempo;
+        public ImageView delete;
+        public int mPosition;
 
         private Treino treino;
         public ItemViewHolder(@NonNull View view) {
@@ -61,6 +70,19 @@ public  class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolde
             textView = view.findViewById(R.id.conteudo);
             textDistancia = view.findViewById(R.id.textDistance);
             tempo = view.findViewById(R.id.textTempo);
+            delete = view.findViewById(R.id.delete);
+
+
+            delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (onDeleteClickListener != null) {
+                        onDeleteClickListener.OnDeleteClickListener(treinosList.get(mPosition));
+                    }
+                }
+            });
+
+
         }
     }
 }

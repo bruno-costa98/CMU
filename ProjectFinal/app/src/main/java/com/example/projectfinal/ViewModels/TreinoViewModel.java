@@ -27,6 +27,10 @@ public class TreinoViewModel extends AndroidViewModel {
         mTreinos = treinoDao.getAllTreinos();
     }
 
+    public void delete(Treino treino) {
+        new DeleteAsyncTask(treinoDao).execute(treino);
+    }
+
     public void insertTreino(Treino treino){
         new insertAsyncTask(treinoDao).execute(treino);
         Log.d("insert", "inseriu" + treino.distance + treino.time);
@@ -44,6 +48,19 @@ public class TreinoViewModel extends AndroidViewModel {
         @Override
         protected Void doInBackground(Treino... treinos) {
              treinoDao.insertTreino(treinos[0]);
+            return null;
+        }
+    }
+
+    private class DeleteAsyncTask extends AsyncTask<Treino, Void, Void> {
+        TreinoDao treinoDao;
+        public DeleteAsyncTask(TreinoDao mTreinoDao) {
+            this.treinoDao = mTreinoDao;
+        }
+
+        @Override
+        protected Void doInBackground(Treino... treinos) {
+            treinoDao.delete(treinos[0]);
             return null;
         }
     }

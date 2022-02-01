@@ -20,7 +20,7 @@ import com.example.projectfinal.ViewModels.TreinoViewModel;
 
 import java.util.List;
 
-public class HistoryFragment extends Fragment {
+public class HistoryFragment extends Fragment implements ItemAdapter.OnDeleteClickListener {
 
 
     public Context context;
@@ -49,7 +49,7 @@ public class HistoryFragment extends Fragment {
 
         RecyclerView recyclerView = view.findViewById(R.id.list);
         TreinoViewModel treinoViewModel = new ViewModelProvider(this, new ViewModelProvider.AndroidViewModelFactory((Application) context.getApplicationContext())).get(TreinoViewModel.class);
-        itemAdapter = new ItemAdapter(context);
+        itemAdapter = new ItemAdapter(context, this);
         recyclerView.setAdapter(itemAdapter);
 
         treinoViewModel.getAllTreinos().observe(getViewLifecycleOwner(), new Observer<List<Treino>>() {
@@ -63,5 +63,11 @@ public class HistoryFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
         return view;
+    }
+
+    @Override
+    public void OnDeleteClickListener(Treino meuTreino) {
+        TreinoViewModel treinoViewModel = new ViewModelProvider(this, new ViewModelProvider.AndroidViewModelFactory((Application) context.getApplicationContext())).get(TreinoViewModel.class);
+        treinoViewModel.delete(meuTreino);
     }
 }
