@@ -60,7 +60,7 @@ public class PrincipalActivity extends AppCompatActivity implements
     private FusedLocationProviderClient mFusedLocation;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
-    public double latitude, longitude;
+    double latitude, longitude;
     private TreinoViewModel treinoViewModel;
     private Treino treino;
     private ItemAdapter itemAdapter;
@@ -87,6 +87,10 @@ public class PrincipalActivity extends AppCompatActivity implements
         mapsFragment = new MapsFragment();
         fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        Bundle bundle = new Bundle();
+        bundle.putDouble("lat", latitude);
+        bundle.putDouble("lng", longitude);
+        mapsFragment.setArguments(bundle);
         fragmentTransaction.replace(R.id.fragmentContainerPrin, mapsFragment);
         fragmentTransaction.commit();
 
@@ -219,6 +223,10 @@ public class PrincipalActivity extends AppCompatActivity implements
         MapsFragment mapsFragment;
         mapsFragment = new MapsFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        Bundle bundle = new Bundle();
+        bundle.putDouble("lat", latitude);
+        bundle.putDouble("lng", longitude);
+        mapsFragment.setArguments(bundle);
         fragmentTransaction.replace(R.id.fragmentContainerPrin, mapsFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
@@ -250,7 +258,6 @@ public class PrincipalActivity extends AppCompatActivity implements
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                 REQUEST_FINE_LOCATION);
     }
-
 
     /*
     @Override
