@@ -9,7 +9,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.projectfinal.MainActivity;
 import com.example.projectfinal.Models.Places;
+import com.example.projectfinal.PrincipalActivity;
 import com.example.projectfinal.R;
 
 import java.util.ArrayList;
@@ -41,6 +44,13 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ItemViewHold
         String s = placesList.get(position).getPlus_code().compound_code;
         String parts[] = s.split(" ", 2);
         holder.city.setText(parts[1]);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PrincipalActivity mainActivity = (PrincipalActivity) mContext;
+                mainActivity.sendPlace(placesList.get(position));
+            }
+        });
 //        holder.pais.setText(placesList.get(position).getCountry());
     }
 
@@ -64,5 +74,9 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ItemViewHold
             city = view.findViewById(R.id.textCity);
 //            pais = view.findViewById(R.id.textCountry);
         }
+    }
+
+    public interface PlaceAdapterComunication{
+        void sendPlace(Places places);
     }
 }

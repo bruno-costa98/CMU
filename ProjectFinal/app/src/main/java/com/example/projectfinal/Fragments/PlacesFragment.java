@@ -57,6 +57,8 @@ public class PlacesFragment extends Fragment {
 
     private PlaceAdapter adapter;
 
+    private RetrofitService retrofitService = new RetrofitService();
+
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -97,17 +99,8 @@ public class PlacesFragment extends Fragment {
         }
 
         adapter = new PlaceAdapter(context);
-
-        Gson gson = new GsonBuilder()
-                .setLenient()
-                .create();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://maps.googleapis.com/maps/api/")
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build();
-
-        PlacesApi placesApi = retrofit.create(PlacesApi.class);
+        
+        PlacesApi placesApi = retrofitService.getRetrofit().create(PlacesApi.class);
 
         String location = place.latitude + "," + place.longitude;
         Call<Results> call = placesApi.getPlaces(location,5000, "gym", key);
