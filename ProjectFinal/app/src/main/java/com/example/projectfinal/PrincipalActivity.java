@@ -27,10 +27,12 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.projectfinal.Fragments.HistoryFragment;
 import com.example.projectfinal.Fragments.ItemAdapter;
 import com.example.projectfinal.Fragments.MapsFragment;
+import com.example.projectfinal.Fragments.MapsPlaceFragment;
 import com.example.projectfinal.Fragments.PlaceAdapter;
 import com.example.projectfinal.Fragments.PlacesFragment;
 import com.example.projectfinal.Fragments.RegTrainerFragment;
 import com.example.projectfinal.Fragments.TrainerFragment;
+import com.example.projectfinal.Models.Places;
 import com.example.projectfinal.Models.Treino;
 import com.example.projectfinal.Retrofit.RetrofitService;
 import com.example.projectfinal.ViewModels.TreinoViewModel;
@@ -46,8 +48,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 
+
 public class PrincipalActivity extends AppCompatActivity implements
-        NavigationBarView.OnItemSelectedListener{ //implements SensorEventListener {
+        NavigationBarView.OnItemSelectedListener, PlaceAdapter.PlaceAdapterComunication{ //implements SensorEventListener {
 
     private TextView steps;
     private SensorManager sensor;
@@ -271,6 +274,24 @@ public class PrincipalActivity extends AppCompatActivity implements
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                 REQUEST_FINE_LOCATION);
     }
+
+    @Override
+    public void sendPlace(Places places) {
+        Places temp = places;
+
+        MapsPlaceFragment m = new MapsPlaceFragment();
+        Bundle b = new Bundle();
+        b.putSerializable("p", places);
+        LatLng place;
+        b.putParcelable("posicao", place = new LatLng(latitude,longitude));
+        m.setArguments(b);
+        fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainerPrin, m);
+        fragmentTransaction.commit();
+    }
+
+
 
     /*
     @Override

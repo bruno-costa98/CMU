@@ -1,10 +1,14 @@
 package com.example.projectfinal.Models;
 
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
-public class Places {
+import java.io.Serializable;
 
-    private String icon;
+public class Places implements Serializable {
+
+    private Geometry geometry;
 
     private String name;
 
@@ -14,19 +18,15 @@ public class Places {
         return plus_code;
     }
 
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Geometry getGeometry() {
+        return geometry;
     }
 }
