@@ -102,7 +102,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     TextView textView;
     private GoogleMap googleMap;
 
-    public Context context;
     private TextView timeView;
     private Button start, end;
     private int seconds = 0;
@@ -224,7 +223,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                         start.setEnabled(true);
                         running = false;
                         time = timeView.getText().toString();
-                        Treino treino = new Treino("Run", "30km", time);
+                        Treino treino = new Treino("Run", distance + "km", time);
                         treinoViewModel.insertTreino(treino);
                     }
                 }, 1000);
