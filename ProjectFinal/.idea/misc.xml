@@ -3,14 +3,46 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Android/sdk/platforms/android-31/data/res/layout/simple_spinner_item.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout-w1240dp/activity_main.xml" value="0.1318607764390897" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout-w1240dp/activity_main2.xml" value="0.18775100401606426" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout-w1240dp/fragment_login.xml" value="0.1318607764390897" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout-w1240dp/fragment_maps.xml" value="0.5" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout-w1240dp/fragment_register.xml" value="0.21251673360107096" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout-w1240dp/fragment_regtrainer.xml" value="0.21251673360107096" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout-w1240dp/list_item.xml" value="0.21251673360107096" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout-w1240dp/my_toolbar.xml" value="0.21251673360107096" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout-w1240dp/principal_main.xml" value="0.1318607764390897" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout-w1240dp/spinner_item.xml" value="0.23560910307898258" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout-w600dp/activity_main.xml" value="0.17372134038800705" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout-w600dp/activity_main2.xml" value="0.24735449735449735" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout-w600dp/fragment_history.xml" value="0.17372134038800705" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout-w600dp/fragment_login.xml" value="0.17372134038800705" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout-w600dp/fragment_maps.xml" value="0.31040564373897706" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout-w600dp/fragment_maps_place.xml" value="0.31040564373897706" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout-w600dp/fragment_register.xml" value="0.27998236331569665" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout-w600dp/fragment_regtrainer.xml" value="0.31040564373897706" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout-w600dp/list_item.xml" value="0.27998236331569665" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout-w600dp/my_toolbar.xml" value="0.27998236331569665" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout-w600dp/principal_main.xml" value="0.17372134038800705" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout-w600dp/spinner_item.xml" value="0.31040564373897706" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout/activity_main.xml" value="0.2921875" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout/activity_main2.xml" value="0.2921875" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout/content_main.xml" value="0.2921875" />
         <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout/fragment_history.xml" value="0.36666666666666664" />
-        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout/fragment_maps.xml" value="0.17831813576494426" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout/fragment_maps.xml" value="0.5" />
         <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout/fragment_maps_place.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout/fragment_places.xml" value="0.17831813576494426" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout/fragment_reflow.xml" value="0.2921875" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout/fragment_register.xml" value="0.3307291666666667" />
         <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout/info_window.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout/list_item.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout/place_item.xml" value="0.17831813576494426" />
         <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout/principal_main.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout/spinner_item.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/layout/trainer_fragment.xml" value="0.2921875" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/menu/navigation_bar.xml" value="0.3307291666666667" />
+        <entry key="..\:/Users/Bruno Costa/Desktop/CMU/ProjectFinal/app/src/main/res/menu/the_toolbar.xml" value="0.3307291666666667" />
         <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1" />
         <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/activity_atividade2.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/paulo/AndroidStudioProjects/ProjectFinal/app/src/main/res/layout/activity_main.xml" value="0.24010416666666667" />

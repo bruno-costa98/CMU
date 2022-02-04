@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projectfinal.Models.Treino;
 import com.example.projectfinal.R;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ public  class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolde
     private LayoutInflater layoutInflater;
     private Context mContext;
     private OnDeleteClickListener onDeleteClickListener;
+
 
     public ItemAdapter(Context context, OnDeleteClickListener listener){
         this.treinosList = new ArrayList<>();
@@ -48,6 +50,7 @@ public  class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolde
             holder.tempo.setText(treinosList.get(position).getTime());
             holder.setData(position);
             holder.setListeners();
+
     }
 
     @Override

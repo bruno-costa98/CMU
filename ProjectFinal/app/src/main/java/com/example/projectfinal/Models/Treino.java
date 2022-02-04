@@ -22,16 +22,20 @@ public class Treino  {
     @NonNull
     @ColumnInfo(name = "tempo")
     public String time;
+    @NonNull
+    @ColumnInfo(name = "user")
+    public String uid;
 
     public Treino(){
 
     }
 
-    public Treino(String descrcao, String distancia, String tempo) {
+    public Treino(String descrcao, String distancia, String tempo, String uid) {
         this.id = id;
         this.type = descrcao;
         this.distance = distancia;
         this.time = tempo;
+        this.uid = uid;
     }
 
     public int getId() {
@@ -53,11 +57,17 @@ public class Treino  {
         return type;
     }
 
+    @NonNull
+    public String getUid() {
+        return uid;
+    }
+
     @Override
     public String toString() {
         return " Treino: " +
                 "Descrição:  " + type + '\'' +
                 "Distancia:  " + distance + '\'' +
-                "Tempo: " + time + '\'';
+                "Tempo: " + time + '\'' +
+                "User ID: " + uid + '\'';
     }
 }

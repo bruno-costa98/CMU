@@ -41,6 +41,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.crashlytics.buildtools.reloc.org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -69,6 +70,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     public Context context;
     private TextView textView;
     private GoogleMap googleMap;
+    private FirebaseAuth mAuth;
 
     private TextView timeView;
     private Button start, end;
@@ -93,7 +95,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
+        mAuth = FirebaseAuth.getInstance();
         LocationManager gpsHabilitado = (LocationManager) context.getSystemService(LOCATION_SERVICE);
 
 
@@ -130,7 +132,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         start = view.findViewById(R.id.start_button);
         end = view.findViewById(R.id.endButton);
         typeOfTrainer = view.findViewById(R.id.spinner);
-        ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(context, R.array.TypeOfTrainer, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(context, R.array.TypeOfTrainer, R.layout.spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
         typeOfTrainer.setAdapter(adapter);
 
@@ -170,8 +172,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        oldPosition = ultimaPosicao;
-                        Log.e("l", oldPosition.getLatitude() + ", " + oldPosition.getLongitude());
+                        if (ultimaPosicao != null) {
+                            oldPosition = ultimaPosicao;
+                            Log.e("l", oldPosition.getLatitude() + ", " + oldPosition.getLongitude());
+                        }
                     }
                 }, 1000);
                 end.setEnabled(true);
@@ -186,9 +190,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
 
                 recuperarPosicaoAtual();
-                Log.e("l", oldPosition.getLatitude() + ", " + oldPosition.getLongitude());
-                Log.e("l", ultimaPosicao.getLatitude() + ", " + ultimaPosicao.getLongitude());
-                Log.e("l", ""+ultimaPosicao.distanceTo(oldPosition));
+
 
                 isRunning = false;
                 end.setEnabled(false);
@@ -198,14 +200,22 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     @Override
                     public void run() {
 
-                        DistanceCalc distanceCalc = new DistanceCalc();
+                        distance = 0.0;
+                        if (ultimaPosicao != null) {
+                            Log.e("l", oldPosition.getLatitude() + ", " + oldPosition.getLongitude());
+                            Log.e("l", ultimaPosicao.getLatitude() + ", " + ultimaPosicao.getLongitude());
+                            Log.e("l", "" + ultimaPosicao.distanceTo(oldPosition));
+
+                            DistanceCalc distanceCalc = new DistanceCalc();
 //                        distance = (double) Math.round((ultimaPosicao.distanceTo(oldPosition) * 0.001) * 100) / 100;
-                        distance = (double) Math.round((distanceCalc.getDistance(oldPosition,ultimaPosicao) * 0.001) * 100) / 100;
-                        textView.setText("Total distance: "+ distance);
+                            distance = (double) Math.round((distanceCalc.getDistance(oldPosition, ultimaPosicao) * 0.001) * 100) / 100;
+
+                        }
+                        textView.setText("Total distance: " + distance);
                         start.setEnabled(true);
                         running = false;
                         time = timeView.getText().toString();
-                        Treino treino = new Treino(type, distance + "km", time);
+                        Treino treino = new Treino(type, distance + "km", time, mAuth.getUid());
                         treinoViewModel.insertTreino(treino);
                     }
                 }, 1000);
@@ -312,18 +322,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         mMap = googleMap;
         recuperarPosicaoAtual();
         adicionaComponentesVisuais();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mapFragment.onDestroy();
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mapFragment.onLowMemory();
     }
 
 

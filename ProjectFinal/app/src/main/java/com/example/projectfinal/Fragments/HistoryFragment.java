@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.projectfinal.Models.Treino;
 import com.example.projectfinal.R;
 import com.example.projectfinal.ViewModels.TreinoViewModel;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class HistoryFragment extends Fragment implements ItemAdapter.OnDeleteCli
 
     public Context context;
     private ItemAdapter itemAdapter;
+    private FirebaseAuth mAuth;
 
     public HistoryFragment() {
     }
@@ -39,6 +41,7 @@ public class HistoryFragment extends Fragment implements ItemAdapter.OnDeleteCli
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        mAuth = FirebaseAuth.getInstance();
     }
 
     @Override
@@ -52,7 +55,7 @@ public class HistoryFragment extends Fragment implements ItemAdapter.OnDeleteCli
         itemAdapter = new ItemAdapter(context, this);
         recyclerView.setAdapter(itemAdapter);
 
-        treinoViewModel.getAllTreinos().observe(getViewLifecycleOwner(), new Observer<List<Treino>>() {
+        treinoViewModel.getUserTreinos(mAuth.getUid()).observe(getViewLifecycleOwner(), new Observer<List<Treino>>() {
             @Override
             public void onChanged(List<Treino> treinos) {
                 itemAdapter.setTreinoList(treinos);

@@ -19,6 +19,7 @@ public class TreinoViewModel extends AndroidViewModel {
     private TreinoDao treinoDao;
     private TreinoDatabase treinoDatabase;
     private LiveData<List<Treino>> mTreinos;
+    private LiveData<List<Treino>> uTreinos;
 
     public TreinoViewModel(Application application){
         super(application);
@@ -39,6 +40,11 @@ public class TreinoViewModel extends AndroidViewModel {
    public LiveData<List<Treino>> getAllTreinos(){
         return mTreinos;
    }
+
+    public LiveData<List<Treino>> getUserTreinos(String user) {
+        uTreinos = treinoDao.getUserTreinos(user);
+        return uTreinos;
+    }
 
     public class insertAsyncTask extends AsyncTask<Treino, Void, Void> {
         TreinoDao treinoDao;

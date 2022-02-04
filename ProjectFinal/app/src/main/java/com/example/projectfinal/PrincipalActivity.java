@@ -228,7 +228,7 @@ public class PrincipalActivity extends AppCompatActivity implements
     public void save(String description, EditText distance, EditText time){
         String distancia = String.valueOf(distance.getText());
         String tempo = String.valueOf(time.getText());
-        treino = new Treino(description, distancia, tempo);
+        treino = new Treino(description, distancia, tempo, mAuth.getUid());
         treinoViewModel.insertTreino(treino);
 
         Toast.makeText(PrincipalActivity.this, "Saved!", Toast.LENGTH_SHORT).show();
