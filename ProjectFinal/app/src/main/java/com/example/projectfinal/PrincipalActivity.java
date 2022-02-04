@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
@@ -39,6 +40,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
@@ -77,22 +79,20 @@ public class PrincipalActivity extends AppCompatActivity implements
         treinoViewModel = new ViewModelProvider(this, new ViewModelProvider.AndroidViewModelFactory((Application)
                 this.getApplicationContext())).get(TreinoViewModel.class);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("SportZ");
-        setSupportActionBar(toolbar);
+//        Toolbar toolbar = findViewById(R.id.toolbar);
+//        toolbar.setTitle("SportZ");
+//        setSupportActionBar(toolbar);
 
         navigationView = findViewById(R.id.navigation_bar);
         navigationView.setSelectedItemId(R.id.trainer);
 
-        mapsFragment = new MapsFragment();
-        fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        Bundle bundle = new Bundle();
-        bundle.putDouble("lat", latitude);
-        bundle.putDouble("lng", longitude);
-        mapsFragment.setArguments(bundle);
-        fragmentTransaction.replace(R.id.fragmentContainerPrin, mapsFragment);
-        fragmentTransaction.commit();
+//        mapsFragment = new MapsFragment();
+//        fragmentManager = getSupportFragmentManager();
+//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//        fragmentTransaction.replace(R.id.fragmentContainerPrin, mapsFragment);
+//        fragmentTransaction.commit();
+
+
 
         navigationView.setOnItemSelectedListener(this);
 
@@ -106,7 +106,8 @@ public class PrincipalActivity extends AppCompatActivity implements
                             if (location != null) {
                                 latitude = location.getLatitude();
                                 longitude= location.getLongitude();
-                                Toast.makeText(PrincipalActivity.this, "Localização conseguida", Toast.LENGTH_SHORT).show();
+
+//                                Toast.makeText(PrincipalActivity.this, "Localização conseguida", Toast.LENGTH_SHORT).show();
                             } else {
                                 locationRequest = LocationRequest.create();
                                 locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -115,25 +116,37 @@ public class PrincipalActivity extends AppCompatActivity implements
                                 locationCallback = new LocationCallback() {
                                     @Override
                                     public void onLocationResult(LocationResult locationResult) {
-                                        if (locationResult == null) {
-                                            return;
-                                        }
+//                                        if (locationResult == null) {
+//                                            return;
+//                                        }
                                         for (Location location : locationResult.getLocations()) {
-                                            if (location != null) {
+//                                            if (location != null) {
                                                 latitude = location.getLatitude();
                                                 longitude = location.getLongitude();
-                                            }
+//                                            }
                                         }
                                     }
                                 };
-                                mFusedLocation.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-                                Toast.makeText(PrincipalActivity.this, "A localização é a mesma de antes", Toast.LENGTH_SHORT).show();
+                                mFusedLocation.requestLocationUpdates(locationRequest, locationCallback, null);
+//                                Toast.makeText(PrincipalActivity.this, "A localização é a mesma de antes", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });}
         else {
             lastLocation();
         }
+
+        final Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mapsFragment = new MapsFragment();
+                fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragmentContainerPrin, mapsFragment);
+                fragmentTransaction.commit();
+            }
+        }, 700);
     }
 
 
@@ -236,8 +249,9 @@ public class PrincipalActivity extends AppCompatActivity implements
         PlacesFragment placesFragment;
         placesFragment = new PlacesFragment();
         Bundle b = new Bundle();
-        b.putDouble("lat", latitude);
-        b.putDouble("long", longitude);
+        LatLng place;
+        b.putParcelable("place", place = new LatLng(latitude,longitude));
+//        b.putDouble("long", longitude);
         placesFragment.setArguments(b);
         fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -291,5 +305,6 @@ public class PrincipalActivity extends AppCompatActivity implements
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
      */
+
 }
 

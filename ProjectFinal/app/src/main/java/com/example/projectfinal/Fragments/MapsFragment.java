@@ -10,75 +10,70 @@ import androidx.fragment.app.Fragment;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.provider.SyncStateContract;
+import android.os.Handler;
+import android.os.Looper;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.projectfinal.Interfaces.PlacesApi;
-import com.example.projectfinal.MainActivity;
-import com.example.projectfinal.Models.Coordenada;
-import com.example.projectfinal.Models.Places;
-import com.example.projectfinal.Models.Results;
-import com.example.projectfinal.PrincipalActivity;
 import com.example.projectfinal.R;
-import com.google.android.gms.common.internal.Constants;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-public class MapsFragment extends Fragment {
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import org.apache.commons.io.IOCase;
+
+public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    public LocationManager locationManager;
-//    Location location;
-//    LatLng CENTER = null;
 
     private String mParam1;
     private String mParam2;
 
-    private double lat;
-    private double lng;
+    private FusedLocationProviderClient servicoLocalizacao;
+    private GoogleMap mMap;
 
-    private double oLat;
-    private double oLng;
+    private boolean permitiuGPS = false;
+    private static Location ultimaPosicao;
+    private static Location oldPosition;
 
-    private LatLng myPosition;
-    private LatLng oldPosition;
+    private static boolean isRunning = false;
 
-    private LocationRequest locationRequest;
+
+    private double distance;
+
 
     private SupportMapFragment mapFragment;
+
 
 //    private MapView map;
 
@@ -92,19 +87,36 @@ public class MapsFragment extends Fragment {
         this.context = context;
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
-            lat = getArguments().getDouble("lat");
-            lng = getArguments().getDouble("lng");
         }
 
-        locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(20 * 1000);
+        LocationManager gpsHabilitado = (LocationManager) context.getSystemService(LOCATION_SERVICE);
+
+
+        if(!gpsHabilitado.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+
+            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+            Toast.makeText(context.getApplicationContext(), "Para este aplicativo é necessário habilitar o GPS", Toast.LENGTH_LONG).show();
+        }
+
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},120);
+        }else{
+            permitiuGPS = true;
+        }
+
+
+        servicoLocalizacao = LocationServices.getFusedLocationProviderClient(context);
+
+
+
+
     }
 
 //    private OnMapReadyCallback callback = new OnMapReadyCallback() {
@@ -133,142 +145,218 @@ public class MapsFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
-        textView = view.findViewById(R.id.distanceTextView);
-
-        mapFragment = (SupportMapFragment)
-                getChildFragmentManager().findFragmentById(R.id.map);
-
-        mapFragment.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(@NonNull GoogleMap googleMap) {
-
-                googleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
-                    @Override
-                    public void onMapLoaded() {
-
-                        Criteria criteria = new Criteria();
-                        LocationManager locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
-                        String provider = locationManager.getBestProvider(criteria, true);
-
-                        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                            // TODO: Consider calling
-                            //    ActivityCompat#requestPermissions
-                            // here to request the missing permissions, and then overriding
-                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                            //                                          int[] grantResults)
-                            // to handle the case where the user grants the permission. See the documentation
-                            // for ActivityCompat#requestPermissions for more details.
-                            return;
-                        }
-
-                        Location location = locationManager.getLastKnownLocation(provider);
-                        double latitude = location.getLatitude();
-                        double longitude = location.getLongitude();
-                        myPosition = new LatLng(latitude, longitude);
-
-//                        googleMap.clear();
-                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                                myPosition, 15
-                        ));
-
-                        googleMap.addMarker(new MarkerOptions().position(myPosition).title("Marker"));
+        TextView textView = view.findViewById(R.id.distanceTextView);
 
 
-//
-
-//
-//                        googleMap.addMarker(markerOptions);
-                    }
-                });
-            }
-        });
-
-//        map = view.findViewById(R.id.map);
         Button start = view.findViewById(R.id.startButton);
         Button end = view.findViewById(R.id.endButton);
 
+        if (!isRunning) {
+            start.setEnabled(true);
+            end.setEnabled(false);
+        } else {
+            start.setEnabled(false);
+            end.setEnabled(true);
+        }
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                oldPosition = myPosition;
+                final Handler handler = new Handler(Looper.getMainLooper());
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        oldPosition = ultimaPosicao;
+                        Log.e("l", oldPosition.getLatitude() + ", " + oldPosition.getLongitude());
+                    }
+                }, 1000);
+//                oldPosition = ultimaPosicao;
+//                Log.e("l", oldPosition.getLatitude() + ", " + oldPosition.getLongitude());
+                end.setEnabled(true);
+                start.setEnabled(false);
+                isRunning = true;
             }
         });
 
         end.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                recuperarPosicaoAtual();
+                Log.e("l", oldPosition.getLatitude() + ", " + oldPosition.getLongitude());
+                Log.e("l", ultimaPosicao.getLatitude() + ", " + ultimaPosicao.getLongitude());
+                Log.e("l", ""+ultimaPosicao.distanceTo(oldPosition));
+
+                isRunning = false;
+                end.setEnabled(false);
+
+                final Handler handler = new Handler(Looper.getMainLooper());
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+
+//                        distance = (double) Math.round((ultimaPosicao.distanceTo(oldPosition) * 0.001) * 100) / 100;
+                        distance = (double) Math.round((ultimaPosicao.distanceTo(oldPosition) * 0.001) * 100) / 100;
+                        textView.setText("Total distance: "+ distance);
+                        start.setEnabled(true);
+                    }
+                }, 1000);
 
             }
         });
 
-//        map.onCreate(savedInstanceState);
-//
-//        map.onResume();// needed to get the map to display immediately
-//
-//        try {
-//            MapsInitializer.initialize(getActivity());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        map.getMapAsync(new OnMapReadyCallback() {
-//            @SuppressLint("MissingPermission")
-//            @Override
-//            public void onMapReady(@NonNull GoogleMap mMap) {
-//                googleMap = mMap;
-//
-//                locationManager = ((LocationManager) getActivity()
-//                        .getSystemService(Context.LOCATION_SERVICE));
-//
-//                Boolean localBoolean = Boolean.valueOf(locationManager
-//                        .isProviderEnabled("network"));
-//
-//                if (localBoolean.booleanValue()) {
-//
-//                    CENTER = new LatLng(lat, lng);
-//
-//                } else {
-//
-//                }
-//
-//                googleMap.setMyLocationEnabled(true);
-//
-//
-//                // For dropping a marker at a point on the Map
-//                LatLng sydney = new LatLng(lat, lng);
-//                googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker Title").snippet("Marker Description"));
-//
-//                // For zooming automatically to the location of the marker
-//                CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(15).build();
-//                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-//            }
-//        });
         return view;
     }
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        map.onResume();
-//    }
-//
-//    @Override
-//    public void onPause() {
-//        super.onPause();
-//        map.onPause();
-//    }
-//
-//    @Override
-//    public void onDestroy() {
-//        super.onDestroy();
-//        map.onDestroy();
-//    }
-//
-//    @Override
-//    public void onLowMemory() {
-//        super.onLowMemory();
-//        map.onLowMemory();
-//    }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mapFragment = (SupportMapFragment)
+                getChildFragmentManager().findFragmentById(R.id.map);
+
+            mapFragment.getMapAsync(this);
+
+
+
+    }
+
+    private void recuperarPosicaoAtual() {
+        try {
+
+            if (permitiuGPS) {
+                Task locationResult = servicoLocalizacao.getLastLocation();
+
+                locationResult.addOnCompleteListener(getActivity(), new OnCompleteListener() {
+                    @Override
+                    public void onComplete(Task task) {
+                        if (task.isSuccessful()) {
+                            //Recupera os dados de localização da última posição
+                            ultimaPosicao = (Location) task.getResult();
+                            
+                            //Se for um valor válido
+                            if(ultimaPosicao != null){
+                                //Move a câmera para o ponto recuperado e aplica um Zoom de 15 (valor padrão)
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                        new LatLng(ultimaPosicao.getLatitude(),
+                                                ultimaPosicao.getLongitude()), 15));
+                            }
+                        } else {
+                            //Exibe um Toast se o valor que recuperou do GPS não é válido
+                            Toast.makeText(context.getApplicationContext(), "Não foi possível recuperar a posição.", Toast.LENGTH_LONG).show();
+                            //Escreve o erro no LogCat
+                            Log.e("TESTE_GPS", "Exception: %s", task.getException());
+                        }
+                    }
+                });
+            }
+        } catch(SecurityException e)  {
+            Log.e("TESTE_GPS", e.getMessage());
+        }
+    }
+
+    //Adiciona o botão para centralizar o mapa na posição atual. Esse botão é aquele parecido com um
+    //alvo que fica no canto superior direito do mapa.
+    private void adicionaComponentesVisuais() {
+        //Se o objeto do mapa não existir, encerra o carregamento no return
+        if (mMap == null) {
+            return;
+        }
+
+        try {
+
+            if (permitiuGPS) {
+
+                mMap.setMyLocationEnabled(true);
+
+                mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            } else {
+                mMap.setMyLocationEnabled(false);
+                mMap.getUiSettings().setMyLocationButtonEnabled(false);
+
+
+                ultimaPosicao  = null;
+
+
+                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},120);
+                }
+            }
+        } catch (SecurityException e)  {
+            Log.e("Exception: %s", e.getMessage());
+        }
+    }
+
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        mMap = googleMap;
+        recuperarPosicaoAtual();
+        adicionaComponentesVisuais();
+    }
+
+        @Override
+    public void onResume() {
+        super.onResume();
+        mapFragment.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mapFragment.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mapFragment.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapFragment.onLowMemory();
+    }
+
+    public final Double getDistance() {
+
+        final Double[] d = new Double[1];
+        Thread thread = new Thread((Runnable) new Runnable() {
+            public final void run() {
+                try {
+
+                    URL url = new URL("https://api.mapbox.com/directions/v5/mapbox/walking" + '/' + oldPosition.getLongitude()+ ',' + oldPosition.getLatitude()
+                            + ';' + ultimaPosicao.getLongitude() + ',' + ultimaPosicao.getLatitude() + "?geometries=geojson&access_token=pk.eyJ1IjoibWFyb3RvMTIzNDUiLCJhIjoiY2t4bmE1dm4wMjZpNDJya2p0dWRrangwbCJ9.hPFUdTzeFL2PHhBhKjvvzg");
+                    Log.v("urldirection", url.toString());
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("GET");
+                    conn.connect();
+
+                    if(conn.getResponseCode() == 200) {
+                        BufferedInputStream inp = new BufferedInputStream(conn.getInputStream());
+                        JSONObject jsonObject = new JSONObject(IOUtils.toString((InputStream) inp, "UTF-8"));
+                        JSONArray array = jsonObject.getJSONArray("routes");
+                        JSONObject routes = array.getJSONObject(0);
+                        JSONArray legs = routes.getJSONArray("legs");
+                        JSONObject steps = legs.getJSONObject(0);
+                        d[0] = steps.getDouble("distance");
+                    }
+                    Log.e("THREAD", String.valueOf(d[0]));
+                } catch (JSONException var9) {
+                    Log.e("ContentValues", var9.toString());
+                } catch (IOException var10) {
+                    Log.e("ContentValues", var10.toString());
+                }
+
+            }
+        });
+        thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return d[0];
+    }
 
 //    @Override
 //    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

@@ -21,6 +21,7 @@ import com.example.projectfinal.Models.Results;
 import com.example.projectfinal.R;
 import com.example.projectfinal.Retrofit.RetrofitService;
 import com.example.projectfinal.ViewModels.TreinoViewModel;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -51,6 +52,8 @@ public class PlacesFragment extends Fragment {
 
     private Results results;
     private Context context;
+
+    private LatLng place;
 
     private PlaceAdapter adapter;
 
@@ -89,6 +92,8 @@ public class PlacesFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+            place = getArguments().getParcelable("place");
+            Log.e("l",place.toString().replaceAll("[()]",""));
         }
 
         adapter = new PlaceAdapter(context);
@@ -104,7 +109,8 @@ public class PlacesFragment extends Fragment {
 
         PlacesApi placesApi = retrofit.create(PlacesApi.class);
 
-        Call<Results> call = placesApi.getPlaces(key);
+        String location = place.latitude + "," + place.longitude;
+        Call<Results> call = placesApi.getPlaces(location,5000, "gym", key);
 
         call.enqueue(new Callback<Results>() {
             @Override
