@@ -79,9 +79,9 @@ public class PrincipalActivity extends AppCompatActivity implements
         treinoViewModel = new ViewModelProvider(this, new ViewModelProvider.AndroidViewModelFactory((Application)
                 this.getApplicationContext())).get(TreinoViewModel.class);
 
-//        Toolbar toolbar = findViewById(R.id.toolbar);
-//        toolbar.setTitle("SportZ");
-//        setSupportActionBar(toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("SportZ");
+        setSupportActionBar(toolbar);
 
         navigationView = findViewById(R.id.navigation_bar);
         navigationView.setSelectedItemId(R.id.trainer);
@@ -222,11 +222,10 @@ public class PrincipalActivity extends AppCompatActivity implements
         fragmentTransaction.commit();
     }
 
-    public void save(EditText description, EditText distance, EditText time){
-        String descricao = String.valueOf(description.getText());
+    public void save(String description, EditText distance, EditText time){
         String distancia = String.valueOf(distance.getText());
         String tempo = String.valueOf(time.getText());
-        treino = new Treino(descricao, distancia, tempo);
+        treino = new Treino(description, distancia, tempo);
         treinoViewModel.insertTreino(treino);
 
         Toast.makeText(PrincipalActivity.this, "Saved!", Toast.LENGTH_SHORT).show();

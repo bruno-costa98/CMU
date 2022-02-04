@@ -1,18 +1,15 @@
 package com.example.projectfinal.Fragments;
 
 import static android.content.Context.LOCATION_SERVICE;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-
-
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Application;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,34 +17,21 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
-
 import android.os.Looper;
 import android.provider.Settings;
-
-import android.provider.SyncStateContract;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-
-import android.widget.EditText;
-
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
-
 import com.example.projectfinal.R;
-
-import com.example.projectfinal.MainActivity;
-import com.example.projectfinal.Models.Coordenada;
 import com.example.projectfinal.Models.Treino;
-import com.example.projectfinal.PrincipalActivity;
-import com.example.projectfinal.R;
 import com.example.projectfinal.ViewModels.TreinoViewModel;
-import com.google.android.gms.common.internal.Constants;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -57,49 +41,33 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-
-import org.apache.commons.io.IOUtils;
+import com.google.firebase.crashlytics.buildtools.reloc.org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import org.apache.commons.io.IOCase;
 import java.util.Locale;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-
     private String mParam1;
     private String mParam2;
-
     private FusedLocationProviderClient servicoLocalizacao;
     private GoogleMap mMap;
-
     private boolean permitiuGPS = false;
     private static Location ultimaPosicao;
     private static Location oldPosition;
-
     private static boolean isRunning = false;
-
-
-
     private double distance;
-
-
     private SupportMapFragment mapFragment;
-
-
     public Context context;
-    TextView textView;
+    private TextView textView;
     private GoogleMap googleMap;
 
     private TextView timeView;
@@ -108,6 +76,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private boolean running, wasRunning;
     private String time;
     private TreinoViewModel treinoViewModel;
+    private String type;
+    Spinner typeOfTrainer;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -139,12 +109,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             permitiuGPS = true;
         }
 
-
         servicoLocalizacao = LocationServices.getFusedLocationProviderClient(context);
-
-
-
-
     }
 
 
@@ -157,12 +122,28 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
         treinoViewModel = new ViewModelProvider(this, new ViewModelProvider.AndroidViewModelFactory((Application)
                 context.getApplicationContext())).get(TreinoViewModel.class);
+
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
 
         TextView textView = view.findViewById(R.id.distanceTextView);
         timeView = view.findViewById(R.id.timeTextView);
         start = view.findViewById(R.id.start_button);
         end = view.findViewById(R.id.endButton);
+        typeOfTrainer = view.findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(context, R.array.TypeOfTrainer, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+        typeOfTrainer.setAdapter(adapter);
+
+        typeOfTrainer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                type = parent.getItemAtPosition(position).toString();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
       
         if (savedInstanceState != null) {
             seconds
@@ -181,6 +162,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             start.setEnabled(false);
             end.setEnabled(true);
         }
+
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -223,14 +205,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                         start.setEnabled(true);
                         running = false;
                         time = timeView.getText().toString();
-                        Treino treino = new Treino("Run", distance + "km", time);
+                        Treino treino = new Treino(type, distance + "km", time);
                         treinoViewModel.insertTreino(treino);
                     }
                 }, 1000);
 
             }
         });
-      
+
         runTimer();
 
         return view;
@@ -257,9 +239,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 getChildFragmentManager().findFragmentById(R.id.map);
 
             mapFragment.getMapAsync(this);
-
-
-
     }
 
     private void recuperarPosicaoAtual() {

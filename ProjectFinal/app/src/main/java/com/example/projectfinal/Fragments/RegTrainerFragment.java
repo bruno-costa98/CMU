@@ -5,8 +5,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -20,6 +23,8 @@ public class RegTrainerFragment extends Fragment {
     private EditText mDistancia;
     private EditText mtempo;
     private Button mSave;
+    private Spinner typeOfTrainer;
+    private String type;
 
     public RegTrainerFragment() { }
 
@@ -40,15 +45,28 @@ public class RegTrainerFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_regtrainer, container, false);
 
-        mDescricao = view.findViewById(R.id.descricao);
         mDistancia = view.findViewById(R.id.distancia);
         mtempo = view.findViewById(R.id.tempo);
         mSave = view.findViewById(R.id.save);
+        typeOfTrainer = view.findViewById(R.id.typeSpinner);
+        ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(context, R.array.TypeOfTrainer, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+        typeOfTrainer.setAdapter(adapter);
+
+        typeOfTrainer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                type = parent.getItemAtPosition(position).toString();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
 
         mSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((PrincipalActivity) context).save(mDescricao, mDistancia, mtempo);
+                ((PrincipalActivity) context).save(type, mDistancia, mtempo);
             }
         });
 
