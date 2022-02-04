@@ -3,21 +3,27 @@ package com.example.projectfinal.Fragments;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
+import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.SyncStateContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.projectfinal.MainActivity;
 import com.example.projectfinal.Models.Coordenada;
+import com.example.projectfinal.Models.Treino;
 import com.example.projectfinal.PrincipalActivity;
 import com.example.projectfinal.R;
+import com.example.projectfinal.ViewModels.TreinoViewModel;
 import com.google.android.gms.common.internal.Constants;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -28,10 +34,17 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.Locale;
+
 public class MapsFragment extends Fragment {
 
     public Context context;
-    TextView textView;
+    private TextView timeView;
+    private Button start, end;
+    private int seconds = 0;
+    private boolean running, wasRunning;
+    private String time;
+    private TreinoViewModel treinoViewModel;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -64,10 +77,57 @@ public class MapsFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
+        treinoViewModel = new ViewModelProvider(this, new ViewModelProvider.AndroidViewModelFactory((Application)
+                context.getApplicationContext())).get(TreinoViewModel.class);
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
-        textView = view.findViewById(R.id.distanceTextView);
+        //textView = view.findViewById(R.id.distanceTextView);
+        timeView = view.findViewById(R.id.timeTextView);
+        start = view.findViewById(R.id.start_button);
+        end = view.findViewById(R.id.endButton);
+
+        if (savedInstanceState != null) {
+            seconds
+                    = savedInstanceState
+                    .getInt("seconds");
+            running
+                    = savedInstanceState
+                    .getBoolean("running");
+        }
+
+        start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                running = true;
+            }
+        });
+
+        end.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                running = false;
+                time = timeView.getText().toString();
+                Treino treino = new Treino("Run", "30km", time);
+                treinoViewModel.insertTreino(treino);
+            }
+        });
+
+        runTimer();
+
         return view;
     }
+
+    @Override
+    public void onSaveInstanceState(
+            Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState
+                .putInt("seconds", seconds);
+        savedInstanceState
+                .putBoolean("running", running);
+        savedInstanceState
+                .putBoolean("wasRunning", wasRunning);
+    }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -77,4 +137,64 @@ public class MapsFragment extends Fragment {
             mapFragment.getMapAsync(callback);
         }
     }
+
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        wasRunning = running;
+        running = false;
+    }
+
+    // caso a apliacação seja minimizada
+    // mas o atleta ja estava a correr volta a iniciar o cronometro
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        if (wasRunning) {
+            running = true;
+        }
+    }
+
+
+    private void runTimer()
+    {
+
+        final Handler handler
+                = new Handler();
+
+        handler.post(new Runnable() {
+
+            @Override
+            public void run()
+            {
+                int hours = seconds / 3600;
+                int minutes = (seconds % 3600) / 60;
+                int secs = seconds % 60;
+
+            //formatar o tempo
+                String time
+                        = String
+                        .format(Locale.getDefault(),
+                                "%d:%02d:%02d", hours,
+                                minutes, secs);
+
+                // alterar na textView
+                timeView.setText(time);
+
+                // se tiver a correr incrementa
+                if (running) {
+                    seconds++;
+                }
+
+                // Post the code again
+                // with a delay of 1 second.
+                handler.postDelayed(this, 1000);
+            }
+        });
+    }
+
+
 }
