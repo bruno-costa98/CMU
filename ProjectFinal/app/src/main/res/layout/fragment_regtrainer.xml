@@ -40,7 +40,9 @@
                 android:layout_height="wrap_content"
                 android:minHeight="48dp"
                 android:spinnerMode="dropdown"
-                tools:ignore="SpeakableTextPresentCheck" />
+                tools:ignore="SpeakableTextPresentCheck"
+                android:background="@drawable/corner_item"
+                android:layout_marginBottom="30dp"/>
 
 
             <EditText

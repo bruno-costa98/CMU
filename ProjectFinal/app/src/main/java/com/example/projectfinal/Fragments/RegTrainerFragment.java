@@ -55,7 +55,7 @@ public class RegTrainerFragment extends Fragment {
         mtempoS = view.findViewById(R.id.tempoSegundos);
         mSave = view.findViewById(R.id.save);
         typeOfTrainer = view.findViewById(R.id.typeSpinner);
-        ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(context, R.array.TypeOfTrainer, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(context, R.array.TypeOfTrainer, R.layout.spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
         typeOfTrainer.setAdapter(adapter);
 
