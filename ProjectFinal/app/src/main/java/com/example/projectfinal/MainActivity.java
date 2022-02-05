@@ -62,11 +62,15 @@ public class MainActivity extends AppCompatActivity {
 
         createNotificationChannel();
 
-        LoginFragment loginFrag = new LoginFragment();
-        fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.fragmentContainer, loginFrag);
-        fragmentTransaction.commit();
+        if (currentUser == null) {
+            LoginFragment loginFragment = new LoginFragment();
+            fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.fragmentContainer, loginFragment);
+            fragmentTransaction.commit();
+        } else {
+            toPrincipalPage();
+        }
     }
 
 
@@ -86,8 +90,10 @@ public class MainActivity extends AppCompatActivity {
                         if (!task.isSuccessful()) {
                             String errorCode = ((FirebaseAuthException) task.getException())
                                     .getErrorCode();
-                            Toast.makeText(context, "Erro de login!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Password ou email inválido!", Toast.LENGTH_SHORT).show();
                             } else {
+                            Toast.makeText(context, "Login com successo!",
+                                    Toast.LENGTH_SHORT).show();
                             toPrincipalPage();
                         }
                     }
@@ -95,33 +101,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void register(EditText mUserName, EditText mEmail, EditText mPassword) {
-
-/*
-        mAuth = FirebaseAuth.getInstance();
-        String email = mEmail.getText().toString().trim();
-        String password = mPassword.getText().toString().trim();
-        String userName = mUserName.getText().toString().trim();
-
-        if (TextUtils.isEmpty(email)) {
-            mEmail.setError("Email required");
-            return;
-        }
-        if (TextUtils.isEmpty(password)) {
-            mPassword.setError("Password required");
-            return;
-        }
-
-        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    Toast.makeText(MainActivity.this, "Success", Toast.LENGTH_SHORT).show();
-                    gerarNotificacao();
-                } else {
-                    Toast.makeText(MainActivity.this, "Error" + task.getException(), Toast.LENGTH_SHORT).show();
-                }
-            }
-        }); */
 
         mAuth.createUserWithEmailAndPassword(mEmail.getText().toString(),
                 mPassword.getText().toString())
@@ -189,8 +168,6 @@ public class MainActivity extends AppCompatActivity {
     public void toPrincipalPage(){
         Intent intent = new Intent(context, PrincipalActivity.class);
         startActivity(intent);
-        Toast.makeText(context, "Success!",
-                Toast.LENGTH_SHORT).show();
         finish();
     }
 }
