@@ -188,6 +188,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Readin
                 start.setEnabled(false);
                 isRunning = true;
                 running = true;
+                seconds = 0;
                 ((PrincipalActivity)getActivity()).startRun();
             }
         });
@@ -350,8 +351,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Readin
     public void onPause()
     {
         super.onPause();
-        wasRunning = running;
-        running = false;
+        if(running) {
+            wasRunning = running;
+            seconds++;
+        } else {
+            wasRunning = false;
+        }
+
     }
 
     // caso a apliacação seja minimizada
@@ -362,6 +368,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Readin
         super.onResume();
         if (wasRunning) {
             running = true;
+        } else {
+            running = false;
         }
     }
 
@@ -394,9 +402,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Readin
                 // se tiver a correr incrementa
                 if (running) {
                     seconds++;
-                } else {
-                    seconds = 0;
-                    timeView.setText("00:00:00");
                 }
 
                 // Post the code again
