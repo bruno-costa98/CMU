@@ -101,7 +101,7 @@ public class MapsPlaceFragment extends Fragment {
                     pLocation.setLongitude(places.getGeometry().getLocation().getLng());
                     // Setting the longitude
                     double dist = (double) Math.round((d.getDistance(cLocation, pLocation) * 0.001) * 100) / 100;
-                    distance.setText(dist + "km");
+                    distance.setText(dist + " km");
 
                     // Returning the view containing InfoWindow contents
                     return v;

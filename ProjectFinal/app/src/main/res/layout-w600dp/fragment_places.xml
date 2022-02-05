@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".Fragments.PlacesFragment"
+    android:background="#BACACD"
     android:orientation="vertical">
 
     <androidx.recyclerview.widget.RecyclerView

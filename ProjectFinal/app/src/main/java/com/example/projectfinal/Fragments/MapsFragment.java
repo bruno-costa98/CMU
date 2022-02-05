@@ -8,11 +8,14 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -29,6 +32,9 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.projectfinal.Interfaces.ReadingData;
+import com.example.projectfinal.PrincipalActivity;
 import com.example.projectfinal.R;
 import com.example.projectfinal.Models.Treino;
 import com.example.projectfinal.ViewModels.TreinoViewModel;
@@ -42,18 +48,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.crashlytics.buildtools.reloc.org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+
 import java.util.Locale;
 
-public class MapsFragment extends Fragment implements OnMapReadyCallback {
+public class MapsFragment extends Fragment implements OnMapReadyCallback, ReadingData {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -81,6 +79,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private String type;
     Spinner typeOfTrainer;
 
+    private TextView steps;
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -95,6 +95,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
         mAuth = FirebaseAuth.getInstance();
         LocationManager gpsHabilitado = (LocationManager) context.getSystemService(LOCATION_SERVICE);
 
@@ -102,7 +103,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         if(!gpsHabilitado.isProviderEnabled(LocationManager.GPS_PROVIDER)){
 
             startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-            Toast.makeText(context.getApplicationContext(), "Para este aplicativo é necessário habilitar o GPS", Toast.LENGTH_LONG).show();
+            Toast.makeText(context.getApplicationContext(), "Para esta aplicação é necessário permitir o GPS", Toast.LENGTH_LONG).show();
         }
 
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -128,6 +129,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
 
         TextView textView = view.findViewById(R.id.distanceTextView);
+        steps = view.findViewById(R.id.stepsTextView);
         timeView = view.findViewById(R.id.timeTextView);
         start = view.findViewById(R.id.start_button);
         end = view.findViewById(R.id.endButton);
@@ -135,6 +137,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(context, R.array.TypeOfTrainer, R.layout.spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
         typeOfTrainer.setAdapter(adapter);
+
+        steps.setText("0");
 
         typeOfTrainer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -155,7 +159,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     = savedInstanceState
                     .getBoolean("running");
         }
-
 
         if (!isRunning) {
             start.setEnabled(true);
@@ -182,6 +185,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 start.setEnabled(false);
                 isRunning = true;
                 running = true;
+                ((PrincipalActivity)getActivity()).startRun();
             }
         });
 
@@ -194,12 +198,16 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
                 isRunning = false;
                 end.setEnabled(false);
+                ((PrincipalActivity)getActivity()).stopRun();
+
+                steps.setText("0");
+
+
 
                 final Handler handler = new Handler(Looper.getMainLooper());
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-
                         distance = 0.0;
                         if (ultimaPosicao != null) {
                             Log.e("l", oldPosition.getLatitude() + ", " + oldPosition.getLongitude());
@@ -211,7 +219,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                             distance = (double) Math.round((distanceCalc.getDistance(oldPosition, ultimaPosicao) * 0.001) * 100) / 100;
 
                         }
-                        textView.setText("Total distance: " + distance);
+                        textView.setText("Total distance: " + distance + " km");
                         start.setEnabled(true);
                         running = false;
                         time = timeView.getText().toString();
@@ -365,7 +373,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 String time
                         = String
                         .format(Locale.getDefault(),
-                                "%d:%02d:%02d", hours,
+                                "%02d:%02d:%02d", hours,
                                 minutes, secs);
 
                 // alterar na textView
@@ -374,6 +382,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 // se tiver a correr incrementa
                 if (running) {
                     seconds++;
+                } else {
+                    timeView.setText("00:00:00");
                 }
 
                 // Post the code again
@@ -384,4 +394,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     }
 
 
+    @Override
+    public void passData(String count) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                steps.setText(count);
+            }
+        });
+    }
 }

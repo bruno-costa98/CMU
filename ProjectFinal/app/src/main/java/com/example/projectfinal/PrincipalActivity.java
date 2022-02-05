@@ -3,8 +3,13 @@ package com.example.projectfinal;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -22,6 +27,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.projectfinal.Fragments.HistoryFragment;
@@ -32,6 +38,7 @@ import com.example.projectfinal.Fragments.PlaceAdapter;
 import com.example.projectfinal.Fragments.PlacesFragment;
 import com.example.projectfinal.Fragments.RegTrainerFragment;
 import com.example.projectfinal.Fragments.TrainerFragment;
+import com.example.projectfinal.Interfaces.ReadingData;
 import com.example.projectfinal.Models.Places;
 import com.example.projectfinal.Models.Treino;
 import com.example.projectfinal.Retrofit.RetrofitService;
@@ -50,10 +57,10 @@ import com.google.firebase.auth.FirebaseAuth;
 
 
 public class PrincipalActivity extends AppCompatActivity implements
-        NavigationBarView.OnItemSelectedListener, PlaceAdapter.PlaceAdapterComunication{ //implements SensorEventListener {
+        NavigationBarView.OnItemSelectedListener, PlaceAdapter.PlaceAdapterComunication , SensorEventListener {
 
-    private TextView steps;
-    private SensorManager sensor;
+//    private TextView steps;
+    private SensorManager sensorManager;
     private Boolean running = false;
     private FirebaseAuth mAuth;
     private MapsFragment mapsFragment;
@@ -69,7 +76,11 @@ public class PrincipalActivity extends AppCompatActivity implements
     private TreinoViewModel treinoViewModel;
     private Treino treino;
     private ItemAdapter itemAdapter;
+    private static boolean permitiuSensor = false;
 
+    private float totalSteps = 0f;
+    private float previousTotalSteps = 0f;
+    private int currentSteps;
 
     @SuppressLint("MissingPermission")
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +97,17 @@ public class PrincipalActivity extends AppCompatActivity implements
         toolbar.setTitle("SportZ");
         setSupportActionBar(toolbar);
 
+//        steps = findViewById(R.id.stepsTextView);
+
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACTIVITY_RECOGNITION},120);
+        }else{
+            permitiuSensor = true;
+        }
+
+
         navigationView = findViewById(R.id.navigation_bar);
         navigationView.setSelectedItemId(R.id.trainer);
 
@@ -95,7 +117,10 @@ public class PrincipalActivity extends AppCompatActivity implements
 //        fragmentTransaction.replace(R.id.fragmentContainerPrin, mapsFragment);
 //        fragmentTransaction.commit();
 
-
+        loadData();
+//        stopRun();
+        currentSteps = 0;
+        sendDataToFragment();
 
         navigationView.setOnItemSelectedListener(this);
 
@@ -151,6 +176,7 @@ public class PrincipalActivity extends AppCompatActivity implements
             }
         }, 700);
     }
+
 
 
     @Override
@@ -225,9 +251,9 @@ public class PrincipalActivity extends AppCompatActivity implements
         fragmentTransaction.commit();
     }
 
-    public void save(String description, EditText distance, EditText time){
-        String distancia = String.valueOf(distance.getText());
-        String tempo = String.valueOf(time.getText());
+    public void save(String description, String distance, String time){
+        String distancia = distance + " km";
+        String tempo = time;
         treino = new Treino(description, distancia, tempo, mAuth.getUid());
         treinoViewModel.insertTreino(treino);
 
@@ -293,38 +319,76 @@ public class PrincipalActivity extends AppCompatActivity implements
 
 
 
-    /*
+
     @Override
     protected void onResume() {
         super.onResume();
-        running = true;
 
-        Sensor countSteps = sensor.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-        if(countSteps != null){
-            sensor.registerListener(this, countSteps, SensorManager.SENSOR_DELAY_UI);
-        } else {
-            Toast.makeText(this, "Sensor not found", Toast.LENGTH_SHORT).show();
+        if (permitiuSensor) {
+            Sensor stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+
+            if (stepSensor == null) {
+                Toast.makeText(this,"Não foi detetado sensor", Toast.LENGTH_SHORT).show();
+            } else {
+                sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_UI);
+            }
         }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        running = false;
+//        running = false;
         //sensor.unregisterListener();
+    }
+
+    public void startRun() {
+        running = true;
+    }
+
+    public void stopRun() {
+        running = false;
+        currentSteps = 0;
+        previousTotalSteps = totalSteps;
+        sendDataToFragment();
+        saveData();
+    }
+
+    private void saveData() {
+        SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putFloat("key1", previousTotalSteps);
+        editor.apply();
+    }
+
+    private void loadData() {
+        SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
+        float savedNumber = sharedPreferences.getFloat("key1", 0f);
+        previousTotalSteps = savedNumber;
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
          if (running){
-             steps.setText(String.valueOf(event.values[0]));
+             totalSteps = event.values[0];
+             currentSteps = (Math.round(totalSteps) - Math.round(previousTotalSteps));
+             Log.d("passos", String.valueOf(currentSteps));
+             sendDataToFragment();
          }
+    }
+
+    public void sendDataToFragment(){
+        if(mapsFragment != null){
+            ((ReadingData)mapsFragment).passData(String.valueOf(currentSteps));
+        }
+        else
+            Log.e("Error", "Fragment is null");
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
-     */
+
 
 }
 
