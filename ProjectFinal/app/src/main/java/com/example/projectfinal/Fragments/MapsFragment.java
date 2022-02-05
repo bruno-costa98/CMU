@@ -392,6 +392,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Readin
                 if (running) {
                     seconds++;
                 } else {
+                    seconds = 0;
                     timeView.setText("00:00:00");
                 }
 
