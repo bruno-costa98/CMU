@@ -49,6 +49,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.net.InetAddress;
 import java.util.Locale;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback, ReadingData {
@@ -215,7 +216,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Readin
 
                             DistanceCalc distanceCalc = new DistanceCalc();
 //                        distance = (double) Math.round((ultimaPosicao.distanceTo(oldPosition) * 0.001) * 100) / 100;
-                            distance = (double) Math.round((distanceCalc.getDistance(oldPosition, ultimaPosicao) * 0.001) * 100) / 100;
+
+                            if (isInternetAvailable()) {
+                                distance = (double) Math.round((distanceCalc.getDistance(oldPosition, ultimaPosicao) * 0.001) * 100) / 100;
+                            } else {
+                                distance = (double) Math.round((ultimaPosicao.distanceTo(oldPosition) * 0.001) * 100) / 100;
+                            }
+//                            distance = (double) Math.round((distanceCalc.getDistance(oldPosition, ultimaPosicao) * 0.001) * 100) / 100;
 
                         }
                         textView.setText("Total distance: " + distance + " km");
@@ -404,5 +411,16 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Readin
                 steps.setText(count);
             }
         });
+    }
+
+    public boolean isInternetAvailable() {
+        try {
+            InetAddress ipAddr = InetAddress.getByName("google.com");
+
+            return !ipAddr.equals("");
+
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
