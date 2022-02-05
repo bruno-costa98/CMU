@@ -80,6 +80,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Readin
     private String type;
     Spinner typeOfTrainer;
 
+    private static float stepMem;
     private TextView steps;
 
     @Override
@@ -139,6 +140,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Readin
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
         typeOfTrainer.setAdapter(adapter);
 
+
+        passData(String.valueOf(stepMem));
 
         typeOfTrainer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -406,12 +409,15 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Readin
 
     @Override
     public void passData(String count) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                steps.setText(count);
-            }
-        });
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    stepMem = Float.parseFloat(count);
+                    steps.setText(count);
+                }
+            });
+        }
     }
 
     public boolean isInternetAvailable() {
