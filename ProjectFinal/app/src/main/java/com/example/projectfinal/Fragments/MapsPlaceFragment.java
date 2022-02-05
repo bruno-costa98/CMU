@@ -75,19 +75,19 @@ public class MapsPlaceFragment extends Fragment {
                         return null;
                     }
 
-                    // Getting view from the layout file info_window_layout
+
                     View v = getLayoutInflater().inflate(R.layout.info_window, null);
 
-                    // Getting the position from the marker
+
                     LatLng latLng = arg0.getPosition();
 
-                    // Getting reference to the TextView to set latitude
+
                     TextView name = (TextView) v.findViewById(R.id.placeName);
 
-                    // Getting reference to the TextView to set longitude
+
                     TextView distance = (TextView) v.findViewById(R.id.placeDistance);
 
-                    // Setting the latitude
+
                     name.setText(places.getName());
 
                     DistanceCalc d = new DistanceCalc();
@@ -99,11 +99,11 @@ public class MapsPlaceFragment extends Fragment {
                     Location pLocation = new Location(LocationManager.GPS_PROVIDER);
                     pLocation.setLatitude(places.getGeometry().getLocation().getLat());
                     pLocation.setLongitude(places.getGeometry().getLocation().getLng());
-                    // Setting the longitude
+
                     double dist = (double) Math.round((d.getDistance(cLocation, pLocation) * 0.001) * 100) / 100;
                     distance.setText(dist + " km");
 
-                    // Returning the view containing InfoWindow contents
+
                     return v;
 
                 }
