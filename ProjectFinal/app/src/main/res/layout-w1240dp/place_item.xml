@@ -29,7 +29,7 @@
                 android:layout_margin="7dp"
                 android:text="street"
                 android:textColor="#616161"
-                android:textSize="20dp"
+                android:textSize="30dp"
                 android:textStyle="bold"/>
             <TextView
                 android:id="@+id/textCity"
@@ -38,8 +38,7 @@
                 android:layout_margin="7dp"
                 android:text="city"
                 android:textColor="#616161"
-                android:textSize="18sp"/>
-
+                android:textSize="28dp"/>
 
         </LinearLayout>
 

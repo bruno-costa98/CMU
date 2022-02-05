@@ -36,17 +36,17 @@
 
             <Spinner
                 android:id="@+id/typeSpinner"
-                android:layout_width="125dp"
+                android:layout_width="230dp"
                 android:layout_height="wrap_content"
                 android:minHeight="48dp"
                 android:spinnerMode="dropdown"
                 tools:ignore="SpeakableTextPresentCheck" />
 
-
             <EditText
                 android:id="@+id/distancia"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+
                 android:layout_marginBottom="20dp"
                 android:layout_weight="3"
                 android:ems="15"
@@ -111,7 +111,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="100dp"
+                android:layout_marginTop="50dp"
                 android:layout_weight="1"
                 android:gravity="center|center_vertical"
                 android:text="Save" />

@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-@Database(entities = {Treino.class}, version = 1)
+@Database(entities = {Treino.class}, version = 2)
 public abstract class TreinoDatabase extends RoomDatabase {
 
     public abstract TreinoDao treinoDao();
@@ -24,15 +24,15 @@ public abstract class TreinoDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             TreinoDatabase.class, "treinosdatabase")
+                            .fallbackToDestructiveMigration()
                             .build();
                 }
             }
         }
         return INSTANCE;
     }
-
-
-
 }
+
+
 
 

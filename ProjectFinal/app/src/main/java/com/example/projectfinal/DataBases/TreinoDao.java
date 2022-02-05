@@ -21,6 +21,9 @@ public interface TreinoDao {
     @Query("SELECT * FROM treinos")
     LiveData<List<Treino>> getAllTreinos();
 
+    @Query("SELECT * FROM treinos WHERE user = :user")
+    LiveData<List<Treino>> getUserTreinos(String user);
+
     @Delete
     int delete(Treino treino);
 }
