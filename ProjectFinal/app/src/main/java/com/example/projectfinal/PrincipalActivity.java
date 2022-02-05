@@ -225,14 +225,6 @@ public class PrincipalActivity extends AppCompatActivity implements
         }
     }
 
-    public void toTrainerFragment(){
-        trainerFragment = new TrainerFragment();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainerPrin, trainerFragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-    }
-
     public void toHistoryFragment(){
         HistoryFragment historyFragment;
         historyFragment = new HistoryFragment();
