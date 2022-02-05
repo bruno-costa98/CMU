@@ -138,7 +138,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Readin
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
         typeOfTrainer.setAdapter(adapter);
 
-        steps.setText("0");
 
         typeOfTrainer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -256,7 +255,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Readin
         mapFragment = (SupportMapFragment)
                 getChildFragmentManager().findFragmentById(R.id.map);
 
-            mapFragment.getMapAsync(this);
+        steps.setText("0");
+
+        mapFragment.getMapAsync(this);
+
     }
 
     private void recuperarPosicaoAtual() {

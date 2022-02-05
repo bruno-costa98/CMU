@@ -4,15 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_vertical"
+    android:background="#B3C4DD"
     android:orientation="vertical">
 
 
     <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="160dp"
+        android:layout_width="1137dp"
+        android:layout_height="196dp"
+        android:layout_gravity="center"
         android:layout_marginTop="15dp"
         android:contentDescription="RegisterImage"
-        android:src="@drawable/running" />
+        android:src="@drawable/runrun" />
 
     <TextView
         android:id="@+id/textView2"
@@ -21,15 +23,15 @@
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
         android:text="SportZ"
-        android:textStyle="bold"
         android:textAlignment="center"
         android:textColor="#3F51B5"
-        android:textSize="34sp" />
+        android:textSize="50dp"
+        android:textStyle="bold" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/materialCardView"
-        android:layout_width="354dp"
-        android:layout_height="346dp"
+        android:layout_width="800dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
@@ -45,8 +47,8 @@
         app:layout_constraintTop_toBottomOf="@+id/welcomeView">
 
         <RelativeLayout
-            android:layout_width="332dp"
-            android:layout_height="309dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center|top"
             android:layout_margin="10dp">
 
@@ -58,7 +60,8 @@
                 android:ems="15"
                 android:hint="email"
                 android:importantForAutofill="no"
-                android:inputType="textEmailAddress" />
+                android:inputType="textEmailAddress"
+                android:textSize="30dp" />
 
             <EditText
                 android:id="@+id/editTextPassword"
@@ -71,12 +74,13 @@
                 android:hint="password"
                 android:importantForAutofill="no"
                 android:inputType="textPassword"
-                android:minHeight="48dp" />
+                android:minHeight="48dp"
+                android:textSize="30dp" />
 
             <Button
                 android:id="@+id/logInButton"
                 android:layout_width="wrap_content"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/editTextPassword"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="4dp"
@@ -86,7 +90,8 @@
                 android:insetTop="5dp"
                 android:insetRight="5dp"
                 android:insetBottom="5dp"
-                android:text="Sign In" />
+                android:text="Sign In"
+                android:textSize="30dp" />
 
             <TextView
                 android:id="@+id/or"
@@ -98,16 +103,16 @@
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
                 android:text="Or"
+                android:textSize="30dp"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                 android:textColor="#3F51B5"
-                android:textSize="24sp"
                 android:textStyle="bold" />
 
             <Button
                 android:id="@+id/registerButton"
                 android:layout_width="wrap_content"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/or"
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center_horizontal"
@@ -115,6 +120,7 @@
                 android:backgroundTint="#3F51B5"
                 android:insetLeft="5dp"
                 android:insetTop="5dp"
+                android:textSize="30dp"
                 android:insetRight="5dp"
                 android:insetBottom="5dp"
                 android:text="Register Now" />
